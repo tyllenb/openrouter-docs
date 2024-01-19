@@ -62,6 +62,9 @@ const config: DocsThemeConfig = {
   },
   editLink: {
     text:'',
+  },
+  themeSwitch: {
+    component: null
   }
 }
 
