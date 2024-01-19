@@ -34,7 +34,7 @@ Dive into our documentation to start quickly integrating OpenRouter.
 
 import React from 'react';
 import Card from '../components/customCard';
-import { faCode } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faDatabase, faUser, faMicrochip } from '@fortawesome/free-solid-svg-icons';
 
 export const CardGrid = () => {
   return (
@@ -52,19 +52,23 @@ export const CardGrid = () => {
         description="Start building by integrating the API with a few lines of code."
         href="/quickstart" // Replace with your actual link
       />
-
       <Card
-        title="Quickstart"
-        icon={faCode}
-        description="Start building by integrating the API with a few lines of code."
-        href="/quickstart" // Replace with your actual link
+        title="Models"
+        icon={faDatabase}
+        description="View all of our supported models and choose which ones to build with."
+        href="/supported-models" // Replace with your actual link
       />
-
-            <Card
-        title="Quickstart"
-        icon={faCode}
-        description="Start building by integrating the API with a few lines of code."
-        href="/quickstart" // Replace with your actual link
+      <Card
+        title="Integrate OAuth"
+        icon={faUser}
+        description="Have users login with OpenRouter"
+        href="/guides-oauth" // Replace with your actual link
+      />
+      <Card
+        title="OpenAI Integration"
+        icon={faMicrochip}
+        description="Use your OpenAI client to integrate with OpenRouter"
+        href="/guides-openai"
       />
     </div>
   );
