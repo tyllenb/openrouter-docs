@@ -1,0 +1,27 @@
+# Error Codes
+
+Understanding error codes is crucial for effectively handling exceptions and errors that occur while interacting with the API. Below is a list of common error codes and their descriptions:
+
+| Error Code | Description                                             |
+|------------|---------------------------------------------------------|
+| 400        | Bad Request (invalid or missing params, CORS)           |
+| 401        | Invalid credentials (OAuth session expired, disabled/invalid API key) |
+| 402        | Out of credits                                          |
+| 403        | Your chosen model requires moderation and your input was flagged |
+| 408        | Your request timed out                                  |
+| 429        | You are being rate limited                              |
+| 502        | Your chosen model is down or we received an invalid response from it |
+
+### Handling Errors
+
+When interacting with the API, it's important to handle these error codes appropriately. Here are some general guidelines:
+
+- **400 Bad Request**: Check your request parameters. Ensure all required fields are included and correctly formatted.
+- **401 Invalid Credentials**: Verify your API key and ensure it's active. Refresh the OAuth session if necessary.
+- **402 Out of Credits**: Review your account credits. Recharge your account or adjust your usage accordingly.
+- **403 Moderation Flag**: Ensure your input adheres to the API's content guidelines.
+- **408 Timeout**: Optimize your request or try again after checking your network connection.
+- **429 Rate Limited**: Implement request retries with exponential backoff or reduce the frequency of requests.
+- **502 Server Error**: This is often temporary. Retry the request after a short delay.
+
+---

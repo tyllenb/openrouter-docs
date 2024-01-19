@@ -1,0 +1,53 @@
+# Fallback Models
+Providing security against downtime
+
+## Advanced Model Routing with OpenRouter
+
+OpenRouter provides a robust feature for automatic fallback to alternative models. This ensures uninterrupted service and flexibility in handling various scenarios like primary model downtime, rate-limiting, or content moderation. Here's how you can leverage this feature in your application.
+
+### Fallback Model Configuration
+
+#### TypeScript Example
+
+```typescript copy
+{
+  models: ["anthropic/claude-2.1", "gryphe/mythomax-l2-13b"],
+  route: "fallback",
+  // ... other parameters
+}
+```
+
+In this configuration, `models` is an array where you can specify multiple models in order of preference. The `route` parameter is set to `"fallback"`, enabling the automatic routing feature.
+
+### How Fallback Works
+
+- **Initial Request Handling:** When you make a request, OpenRouter first attempts to use the primary model specified (e.g., anthropic/claude-2.1).
+
+- **Error Detection:** If the primary model is unable to process the request due to errors such as downtime, rate-limiting, or content moderation restrictions, OpenRouter detects this.
+
+- **Fallback Activation:** Upon detecting an error with the primary model, OpenRouter automatically switches to the next model in the list (e.g., gryphe/mythomax-l2-13b).
+
+- **Secondary Error Handling:** If the fallback model also fails (due to similar issues), OpenRouter returns the error from the fallback model.
+
+### Error Triggers for Fallback
+
+The fallback mechanism is triggered by various errors, including:
+
+* Context length validation errors.
+* Moderation flags for filtered models.
+* Rate-limiting issues.
+* Downtime or unavailability of the selected model.
+
+### Pricing Considerations
+
+- **Dynamic Pricing:** The cost of the request is based on the model that successfully processes it. This information is included in the `model` attribute of the response body.
+- **Fallback Model Pricing:** If no fallback model is specified (`models` array contains only the primary model) but `route: "fallback"` is included, OpenRouter will automatically select an appropriate open-source model. This model will have a pricing structure close to or less than the primary model.
+
+### Best Practices for Fallback Configuration
+
+| Practice       | Description |
+| -------------- | ----------- |
+| **Multiple Models** | It's recommended to list more than one model in the `models` array for greater reliability. |
+| **Model Selection** | Choose fallback models that offer similar capabilities to your primary model to maintain consistency in responses. |
+| **Testing** | Regularly test your fallback configurations to ensure smooth transitions during actual fallback scenarios. |
+| **Monitoring** | Keep an eye on the models' performance and adjust your configuration as needed based on new models or changes in existing models. |

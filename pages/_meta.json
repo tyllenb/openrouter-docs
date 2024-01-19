@@ -1,15 +1,82 @@
 {
+  "--": {
+    "type": "separator",
+    "title": "Community"
+  },
+
+  "twitter_link": {
+    "title": "Twitter",
+    "href": "https://twitter.com/openrouterai"
+  },
+  "discord_link": {
+    "title": "Discord",
+    "href": "https://discord.gg/fVyRaUDgxW"
+  },
+  "github_link": {
+    "title": "Github",
+    "href": "https://github.com/OpenRouterTeam"
+  },
+
+  "---": {
+    "type": "separator",
+    "title": "Get Started"
+  },
+
   "index": "Introduction",
-  "another": "Another Page",
-  "advanced": "Advanced (A Folder)",
-  "about": {
-    "title": "About",
-    "type": "page"
+  "quickstart": "Quickstart",
+  "rate-limits": "Rate Limits",
+  "request-schema": "Request Schema",
+  "response-schema": "Response Schema",
+  "error-codes": "Error Codes",
+
+  "-": {
+    "type": "separator",
+    "title": "Capabilities"
+  },
+
+  "text-completion": "Text Completion",
+  "vision": "Vision",
+  "object-generation": "Object Generation",
+
+  "-----": {
+    "type": "separator",
+    "title": "Models"
+  },
+
+  "supported-models": "Supported Models",
+  "fallback-models": "Fallback Models",
+  "runner": "Runner",
+
+  "----": {
+    "type": "separator",
+    "title": "Guides"
+  },
+
+  "guides-oauth": "OAuth Integration",
+  "guides-openai": "OpenAI Integration",
+  "guides-prompt-transform": "Prompt Transform",
+  "browse": {
+    "title": "Browse Models ↗",
+    "type": "page",
+    "href": "https://openrouter.ai/models",
+    "newWindow": true
+  },
+  "rankings": {
+    "title": "Rankings ↗",
+    "type": "page",
+    "href": "https://openrouter.ai/rankings",
+    "newWindow": true
   },
   "contact": {
-    "title": "Contact ↗",
+    "title": "Playground ↗",
     "type": "page",
-    "href": "https://twitter.com/shuding_",
+    "href": "https://openrouter.ai/playground",
+    "newWindow": true
+  },
+  "log-in": {
+    "title": "Login ↗",
+    "type": "page",
+    "href": "https://accounts.openrouter.ai/sign-in?redirect_url=https%3A%2F%2Fopenrouter.ai%2Flogin",
     "newWindow": true
   }
 }

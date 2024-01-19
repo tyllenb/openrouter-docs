@@ -1,0 +1,40 @@
+# Prompt Transforms
+To help with prompts that exceed the maximum context size of a model, OpenRouter supports a custom parameter called `transforms`
+
+## Choosing Between Messages and Prompts
+
+### Messages
+Opt for `messages` when you want OpenRouter to apply a recommended instruct template to your prompt. This choice depends on the model serving your request. The available instruct modes for each model include:
+
+- `alpaca`: [docs](https://github.com/tatsu-lab/stanford_alpaca)
+- `llama2`: [docs](https://github.com/facebookresearch/llama#fine-tuned-chat-models)
+- `airoboros`: [docs](https://github.com/jondurbin/airoboros)
+
+### Prompts
+Select `prompt` when you prefer to send a custom prompt to the model. This option is ideal for cases where a custom instruct template is required or when you want to maintain full control over the prompt submitted.
+
+## Transforms Parameter
+
+For prompts that exceed the maximum context size of a model, OpenRouter supports a `transforms` parameter. This feature ensures efficient handling of large prompts.
+
+### Example
+```typescript copy
+{
+  transforms: ["middle-out"], // Compress prompts > context size. Default for all models.
+  messages: [...],           // Use "prompt" as an alternative.
+  model                      // Compatible with any model.
+}
+```
+
+## Description
+
+The `transforms` parameter is an array of strings indicating the transformations to apply to the prompt before it is sent to the model. These transformations are executed in the order they are listed.
+
+Available Transform: Middle-Out
+- **middle-out:** Compresses prompts and message chains to fit within the context size. It is particularly useful for extending conversations, as LLMs tend to pay less attention to the middle of sequences. The compression is achieved by reducing or removing messages in the middle of the prompt.
+
+import { Callout } from 'nextra/components'
+
+<Callout type="info" emoji="ℹ️">
+All OpenRouter models default to using middle-out. To exclude this transform, set `transforms: []` in the request body.
+</Callout>

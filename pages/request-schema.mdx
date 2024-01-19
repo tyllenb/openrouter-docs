@@ -1,0 +1,205 @@
+# Request Schema
+Learn how OpenRouter standardizes schemas across various models and providers.
+
+OpenRouter offers a standardized approach to handling requests and responses, similar to the [OpenAI Chat API](https://platform.openai.com/docs/api-reference/chat/create), but with key differences for enhanced flexibility.
+
+## Request Body Schema
+
+The request body for OpenRouter's `/api/v1/chat/completions` endpoint is structured as follows:
+
+### Key Elements
+
+```typescript copy
+type Request = {
+  messages?: Message[];
+  prompt?: string;
+  model?: string;
+};
+```
+
+#### Parameters Description
+
+- **Messages or Prompt:** Include either a messages array or a prompt string.
+- **Model:** Optionally specify a model, otherwise a default model is used.
+
+## Optional Parameters
+
+```typescript copy
+type Request ={
+  // Additional elements above
+
+  // Optional parameters
+  logit_bias?: { [key: number]: number }; // OpenAI only
+  max_tokens?: number; // Required for some models, so defaults to 512
+  response_format?: { type: 'text' | 'json_object' }; // OpenAI only
+  seed?: number; // OpenAI only
+  stop?: string | string[];
+  stream?: boolean; // Enable streaming
+  temperature?: number;
+  top_p?: number;
+  top_k?: number; // Not available for OpenAI models
+  frequency_penalty?: number;
+  presence_penalty?: number;
+  tools?: Tool[];
+  tool_choice?: ToolChoice;
+  transforms?: string[] // See "Prompt Transforms" section
+  models?: string[] // See "Fallback Models" section
+  route?: 'fallback' // See "Fallback Models" section
+}
+```
+
+### Optional Parameters Description
+
+| Parameter          | Description                                                                 |
+| ------------------ | --------------------------------------------------------------------------- |
+| `logit_bias`       | OpenAI only: Adjusts the likelihood of tokens.                              |
+| `max_tokens`       | Required for some models, defaults to 512.                                  |
+| `response_format`  | OpenAI only: Format of the response, either 'text' or 'json_object'.        |
+| `seed`             | OpenAI only: Used for deterministic outputs.                                |
+| `stop`             | Stop sequence for model generation.                                         |
+| `stream`           | Enable streaming of responses.                                              |
+| `temperature`      | Controls randomness in generation.                                          |
+| `top_p`            | Nucleus sampling parameter.                                                 |
+| `top_k`            | Not available for OpenAI models: Sampling parameter.                        |
+| `frequency_penalty`| Penalizes frequency of token use.                                           |
+| `presence_penalty` | Penalizes new tokens based on their presence.                               |
+| `tools`            | OpenAI only: Tools for function-calling.                                    |
+| `tool_choice`      | Choice of tool for function-calling.                                        |
+| `transforms`       | OpenRouter-only: Specific prompt transformations.                           |
+| `models`           | OpenRouter-only: Fallback models for primary model failure.                 |
+| `route`            | OpenRouter-only: Routing strategy, such as 'fallback'.                      |
+
+## Subtypes in the Schema
+
+```typescript copy
+type Request ={
+    // Additional elements above
+
+    type TextContent = {
+    type: 'text';
+    text: string;
+    };
+
+    type ImageContentPart = {
+    type: 'image_url';
+    image_url: {
+        url: string; // URL or base64 encoded image data
+        detail?: string; // Optional, defaults to 'auto'
+    };
+    };
+
+    type ContentPart = TextContent | ImageContentPart;
+}
+```
+
+### Content Types
+
+- **TextContent:** For text-based content.
+- **ImageContentPart:** For image-based content.
+
+### Message Structure
+
+```typescript copy
+type Message = {
+  role: 'user' | 'assistant' | 'system' | 'tool';
+  content: string | ContentPart[];
+  name?: string;
+};
+```
+
+### Functional and Tool Definitions
+
+```typescript copy
+type Request ={
+    // Additional elements above
+
+    type FunctionDescription = {
+    description?: string;
+    name: string;
+    parameters: object; // JSON Schema object
+    };
+
+    type Tool = {
+    type: 'function';
+    function: FunctionDescription;
+    };
+
+    type ToolChoice = 'none' | 'auto' | {
+    type: 'function';
+    function: {
+        name: string;
+    };
+    }
+}
+```
+
+- **FunctionDescription:** Describes a callable function.
+- **Tool:** Represents a tool or function in the request.
+
+## Request Headers
+
+When making a POST request to OpenRouter, you can include specific headers for additional functionality and app visibility:
+
+### Example Request with Headers
+
+```javascript copy
+fetch("https://openrouter.ai/api/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+    "HTTP-Referer": `${YOUR_SITE_URL}`, // Optional, for app ranking.
+    "X-Title": `${YOUR_SITE_NAME}`, // Optional, for app title.
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    "messages": [
+      {"role": "user", "content": "Who are you?"},
+    ]
+  })
+});
+```
+
+## Model Routing
+
+If the `model` parameter is omitted in your request, OpenRouter uses the user's default model. For specific model routing:
+
+- Include the `model` parameter with the organization prefix.
+- OpenRouter optimizes for cost and performance, with fallbacks for errors or rate-limiting.
+
+## Streaming Support
+
+OpenRouter supports Server-Sent Events (SSE) for streaming responses:
+
+- Set `stream: true` in the request body.
+- Ignore `"comment"` payloads in the SSE stream.
+
+## Handling Non-standard Parameters
+
+- Parameters not supported by the chosen model (such as `logit_bias` in non-OpenAI models, or `top_k` for OpenAI) are ignored.
+- Supported parameters are forwarded to the underlying model API.
+
+## Assistant Prefill Response
+
+OpenRouter supports asking models to complete a partial response. This can be useful for guiding models to respond in a certain way.
+
+To use this features, simply include a message with `role: "assistant"` at the end of your `messages` array.
+
+### Example with Assistant Prefill
+
+```typescript copy
+fetch("https://openrouter.ai/api/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+    "HTTP-Referer": `${YOUR_SITE_URL}`, // Optional, for app ranking.
+    "X-Title": `${YOUR_SITE_NAME}`, // Optional, for app title.
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    "messages": [
+      {"role": "user", "content": "Who are you?"},
+      {"role": "assistant", "content": "I'm not sure, but my best guess is"},
+    ]
+  })
+});
+```

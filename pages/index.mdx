@@ -1,11 +1,73 @@
 # Introduction
- 
-Welcome to Nextra! This is a basic docs template. You can use it as a starting point for your own project :)
+<p style={{ marginTop: '0', marginBottom: '10' }}>The future will bring us hundreds of language models and dozens of providers for each. How will you choose the best?</p>
 
-## What is Nextra?
+import Image from 'next/image'
+import hero from '../public/hero.png'
 
-A **simple**, **powerful** and **flexible** site generation framework with everything you love from Next.js.
+<Image 
+  src={hero} 
+  style={{
+    borderRadius: '10px', // Rounded corners
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Slight drop shadow
+    marginTop: '20px' // Top margin of 5px
+  }} 
+  alt="hero" 
+/>
 
-## Documentation
+## Embrace the Future Of Model Integration
 
-The documentation is available at [https://nextra.site](https://nextra.site).
+OpenRouter stands at the forefront of the AI revolution, offering a single, standardized API that seamlessly bridges the gap between your applications and a multitude of language models. With OpenRouter, you unlock the door to a diverse ecosystem of providers, ensuring you always benefit from the most competitive prices and cutting-edge AI technologies.
+
+- **Cost-Effective:** Navigate the "race to the bottom" with OpenRouter's dynamic pricing model. Access the lowest prices for each AI model across a multitude of providers, ensuring your project remains cost-efficient without sacrificing quality.
+
+- **Simplified Access:** Through OAuth PKCE, empower your users to directly pay for their model usage. Transparency and control are in your hands, providing a clear path to AI integration.
+
+- **Unified API:** Switching between models or providers shouldn't mean rewriting your code. OpenRouter's standardized API is your steadfast constant, providing a singular, cohesive interface for all your AI interactions.
+
+- **Quality Through Usage:** Evals may be flawed, but usage isn't. Determine the best models based on real-world application frequency and, soon, the specific purposes they serve.
+
+- **Interactive Playground:** Engage with multiple models simultaneously. [OpenRouter's Playground](https://openrouter.ai/playground) is designed to encourage experimentation and discovery, fostering a community where sharing insights and strategies is the norm.
+
+## Start Building
+
+Dive into our documentation to start quickly integrating OpenRouter.
+
+import React from 'react';
+import Card from '../components/customCard';
+import { faCode } from '@fortawesome/free-solid-svg-icons';
+
+export const CardGrid = () => {
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr', // Creates two columns with equal space
+      gridGap: '20px', // This adds some space between the cards
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: 'auto',
+    }}>
+      <Card
+        title="Quickstart"
+        icon={faCode}
+        description="Start building by integrating the API with a few lines of code."
+        href="/quickstart" // Replace with your actual link
+      />
+
+      <Card
+        title="Quickstart"
+        icon={faCode}
+        description="Start building by integrating the API with a few lines of code."
+        href="/quickstart" // Replace with your actual link
+      />
+
+            <Card
+        title="Quickstart"
+        icon={faCode}
+        description="Start building by integrating the API with a few lines of code."
+        href="/quickstart" // Replace with your actual link
+      />
+    </div>
+  );
+};
+
+<CardGrid />

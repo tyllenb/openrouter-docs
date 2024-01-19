@@ -1,0 +1,149 @@
+# Response Schema
+Learn how OpenRouter standardizes schemas across various models and providers.
+
+OpenRouter aligns closely with the [OpenAI Chat API](https://platform.openai.com/docs/api-reference/chat/create) in terms of response structures, offering consistency across different models and providers.
+
+## Overview of Response Body
+
+Responses in OpenRouter are designed to be versatile, accommodating various types of outputs depending on your request configuration.
+
+### High-Level Response Structure
+
+```typescript
+type Response = {
+    id: string;
+    choices: (NonStreamingChoice | StreamingChoice | NonChatChoice | Error)[];
+    created: number; // Unix timestamp
+    model: string;
+    object: 'chat.completion';
+};
+```
+
+### Subtypes in Response
+
+#### NonChatChoice
+
+```typescript
+type NonChatChoice = {
+    finish_reason: string | null;
+    text: string;
+};
+```
+
+#### NonStreamingChoice
+```typescript
+type NonStreamingChoice = {
+    finish_reason: string | null;
+    message: {
+        content: string | null;
+        role: string;
+        tool_calls?: ToolCall[];
+    };
+};
+```
+
+#### StreamingChoice
+```typescript
+type StreamingChoice = {
+    finish_reason: string | null;
+    delta: {
+        content: string | null;
+        role?: string;
+        tool_calls?: ToolCall[];
+    };
+};
+```
+
+#### Error
+```typescript
+type Error = {
+    code: number;
+    message: string;
+};
+```
+
+### Function and Tool Calls
+
+```typescript
+type FunctionCall = {
+    name: string;
+    arguments: string;
+};
+
+type ToolCall = {
+    id: string;
+    type: 'function';
+    function: FunctionCall;
+};
+```
+
+## Example Response
+
+An example response may look like this:
+
+```typescript
+{
+  "id": "gen-xxxxxxxxxxxxxx",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "message": {
+        role: "assistant",
+        content: "Hello there!"
+      }
+    }
+  ],
+  "model": "openai/gpt-3.5-turbo"
+}
+```
+
+This response structure ensures that you can handle a variety of outputs, ranging from simple text completions to more complex interactions involving tool calls and streaming data.
+
+## Querying Cost and Stats
+
+After receiving a response from OpenRouter, you can use the returned `id` to query detailed stats, including token counts and costs.
+
+### Fetching Generation Stats
+
+```javascript
+const generation = await fetch("https://openrouter.ai/api/v1/generation?id=$GENERATION_ID", {
+  headers: {
+    // Your request headers
+  }
+});
+
+const stats = await generation.json();
+
+console.log(stats);
+// Example Output:
+{
+  "id": "gen-nNPYi0ZB6GOK5TNCUMHJGgXo",
+  "model": "openai/gpt-4-32k",
+  // ... other stats
+  "usage": 0.00492
+}
+```
+
+## Understanding SSE Stream Comments
+
+For [Server-Sent Events](https://html.spec.whatwg.org/multipage/server-sent-events.html#authoring-notes) (SSE) streams, OpenRouter occasionally sends comments to keep the connection alive. These comments prevent the connection from timing out.
+
+Handling Comments in SSE
+
+```bash
+: OPENROUTER PROCESSING
+```
+
+These comment payloads can be ignored as per SSE specifications. However, they can be used to enhance the user experience, such as displaying a loading indicator.
+
+### Recommendations for SSE Clients
+
+Some SSE client implementations might incorrectly parse non-JSON payloads, leading to errors. We recommend the following clients for a smooth experience:
+
+- [eventsource-parser](https://github.com/rexxars/eventsource-parser)
+- [OpenAI SDK](https://www.npmjs.com/package/openai)
+- [Vercel AI SDK](https://www.npmjs.com/package/ai)
+
+Using these clients can help avoid uncaught errors when processing SSE streams and ensure a more reliable integration with OpenRouter's streaming capabilities.
+
+

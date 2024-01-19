@@ -1,0 +1,311 @@
+---
+title: Quickstart
+description: Get started with OpenRouter to seamlessly integrate a variety of language models into your application.
+---
+
+# Quick Start Guide for OpenRouter
+
+This guide will help you set up OpenRouter in your application so you can take advantage of our standardized API and extensive model offerings.
+
+## Prerequisites
+
+- Sign up for an [OpenRouter account](https://openrouter.ai/).
+- Retrieve your `OPENROUTER_API_KEY`.
+- If available, have your `YOUR_SITE_URL` and `YOUR_SITE_NAME` for API rankings. ***(Optional)***
+
+
+## Quickstart language selection
+
+Choose the language or tool you want to get started with using the OpenRouter API
+
+import { Tabs } from 'nextra/components'
+
+<Tabs items={['Typescript', 'Python', 'curl']}>
+<Tabs.Tab>
+## Step 1: Install Fetch API
+
+Ensure that you have the Fetch API available in your environment. If you're using a modern browser or a Node.js version that supports it, you're all set. Otherwise, you may need to install a polyfill or use an alternative method for making HTTP requests.
+
+You can install `node-fetch` by running the following command
+
+```bash copy
+npm install node-fetch
+```
+
+You can then import `fetch` at the top of your file like so
+
+```typescript copy
+import fetch from 'node-fetch';
+```
+
+## Step 2: Set Up Your Request
+
+You'll be making a POST request to the OpenRouter API. Here's the basic structure you'll use, wrapped in a function for easy reuse:
+
+```typescript filename="Use Model On OpenRouter" copy
+  fetch("https://openrouter.ai/api/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Authorization": \`Bearer \${OPENROUTER_API_KEY}\`,
+    "HTTP-Referer": \`${YOUR_SITE_URL}\`, // Optional, for openrouter.ai rankings.
+    "X-Title": \`${YOUR_SITE_NAME}\`, // Optional, for display in rankings.
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    "model": "openai/gpt-3.5-turbo", // Default model, can be customized.
+    "messages": [
+      {"role": "user", "content": "Your prompt here"}
+    ]
+  })
+})
+```
+Replace `OPENROUTER_API_KEY`, `YOUR_SITE_URL`, and `YOUR_SITE_NAME` with your actual credentials and information.
+
+## Step 3: Handle the Response
+
+Once you've made the request, you'll want to handle the response to ensure that your application can process and display the results effectively.
+
+```typescript filename="Add Response Handling" copy
+fetch("https://openrouter.ai/api/v1/chat/completions", {
+  // ... (rest of the fetch request)
+})
+.then(response => response.json())
+.then(data => {
+  console.log('Response from OpenRouter:', data);
+})
+.catch(error => {
+  console.error('Error:', error);
+});
+```
+
+An example of a sample response
+```typescript filename="Example Response" copy
+{
+  "id": "gen-xxxxxxxxxxxxxx",
+  "choices": [
+    {
+      "finish_reason": "stop", // Different models provide different reasons here
+      "message": { // will be "delta" if streaming
+        role: "assistant",
+        content: "Hello there!"
+      }
+    }
+  ],
+  "model": "openai/gpt-3.5-turbo" // Could also be "anthropic/claude-2.1", etc, depending on the "model" that ends up being used
+}
+```
+
+## Step 4: Handle Errors
+
+You can log an errors you may encounter and use the codes to help debug what the problem might be.
+
+You can adjust your code for handling errors by using the following code
+
+```typescript filename="Error Handling code" copy
+  const request = await fetch("https://openrouter.ai/...")
+  console.log(request.status) // Will be an error code unless the model started processing your request
+  const response = await request.json()
+  console.error(response.error?.status) // Will be an error code
+  console.error(response.error?.message)
+```
+
+**Error Codes**
+
+| Error Code | Description                                             |
+|------------|---------------------------------------------------------|
+| 400        | Bad Request (invalid or missing params, CORS)           |
+| 401        | Invalid credentials (OAuth session expired, disabled/invalid API key) |
+| 402        | Out of credits                                          |
+| 403        | Your chosen model requires moderation and your input was flagged |
+| 408        | Your request timed out                                  |
+| 429        | You are being rate limited                              |
+| 502        | Your chosen model is down or we received an invalid response from it |
+
+---
+</Tabs.Tab>
+
+<Tabs.Tab>
+## Step 1: Install Requests Library
+
+Ensure you have the `requests` library installed in your Python environment. You can install it using pip if it's not already installed:
+
+```bash copy
+pip install requests
+```
+
+## Step 2: Set Up Your Request
+
+You'll be making a POST request to the OpenRouter API using Python's `requests` library. Here's the basic structure wrapped in a function for easy reuse:
+
+```python filename="Use Model On OpenRouter" copy
+import requests
+import json
+
+def send_request():
+    OPENROUTER_API_KEY = "your_api_key_here"
+    YOUR_SITE_URL = "your_site_url_here"
+    YOUR_APP_NAME = "your_app_name_here"
+
+    response = requests.post(
+        url="https://openrouter.ai/api/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "HTTP-Referer": YOUR_SITE_URL,  # Optional, for openrouter.ai rankings.
+            "X-Title": YOUR_APP_NAME,  # Optional, shows in rankings on openrouter.ai.
+        },
+        data=json.dumps({
+            "model": "openai/gpt-3.5-turbo",  # Optional
+            "messages": [
+                {"role": "user", "content": "What is the meaning of life?"}
+            ]
+        })
+    )
+    return response
+```
+Replace `OPENROUTER_API_KEY`, `YOUR_SITE_URL`, and `YOUR_SITE_NAME` with your actual credentials and information.
+
+## Step 3: Handle the Response
+
+Process the response from the API to handle the data effectively in your application.
+
+```python filename="Add Response Handling" copy
+  response = send_request()
+  if response.status_code == 200:
+      data = response.json()
+      print('Response from OpenRouter:', data)
+  else:
+      print('Error:', response.status_code)
+```
+
+An example of a sample response
+```typescript filename="Example Response" copy
+{
+  "id": "gen-xxxxxxxxxxxxxx",
+  "choices": [
+    {
+      "finish_reason": "stop", // Different models provide different reasons here
+      "message": { // will be "delta" if streaming
+        role: "assistant",
+        content: "Hello there!"
+      }
+    }
+  ],
+  "model": "openai/gpt-3.5-turbo" // Could also be "anthropic/claude-2.1", etc, depending on the "model" that ends up being used
+}
+```
+
+## Step 4: Handle Errors
+
+You can log an errors you may encounter and use the codes to help debug what the problem might be.
+
+You can adjust your code for handling errors by using the following code
+
+```typescript filename="Error Handling code" copy
+  const request = await fetch("https://openrouter.ai/...")
+  console.log(request.status) // Will be an error code unless the model started processing your request
+  const response = await request.json()
+  console.error(response.error?.status) // Will be an error code
+  console.error(response.error?.message)
+```
+
+**Error Codes**
+
+| Error Code | Description                                             |
+|------------|---------------------------------------------------------|
+| 400        | Bad Request (invalid or missing params, CORS)           |
+| 401        | Invalid credentials (OAuth session expired, disabled/invalid API key) |
+| 402        | Out of credits                                          |
+| 403        | Your chosen model requires moderation and your input was flagged |
+| 408        | Your request timed out                                  |
+| 429        | You are being rate limited                              |
+| 502        | Your chosen model is down or we received an invalid response from it |
+
+---
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+## Step 1: Prepare Your Environment
+
+Before you begin, ensure you have `cURL` installed in your command-line environment. It's typically pre-installed on many Unix-like operating systems. If not, you can download and install it from [the cURL website](https://curl.haxx.se/).
+
+## Step 2: Set Up Your cURL Request
+
+You'll be making a POST request to the OpenRouter API using cURL. Here's the command you'll use:
+
+```bash copy
+curl https://openrouter.ai/api/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -d '{
+  "model": "openai/gpt-3.5-turbo",
+  "messages": [
+    {"role": "user", "content": "What is the meaning of life?"}
+  ]
+}'
+```
+
+In this command, replace `$OPENROUTER_API_KEY` with your actual API key.
+
+## Step 3: Execute the Request
+
+Run the above command in your terminal. Ensure you have replaced `$OPENROUTER_API_KEY` with your actual API key.
+
+## Step 4: Understand the Response
+
+Upon successful execution, the OpenRouter API will return a JSON response. You can process this response as per your requirement in your application or script.
+
+## Step 5: Handle Errors
+
+If there's an error in your request or with the API, cURL will display an error message. Refer to the below error codes for troubleshooting:
+
+**Error Codes**
+
+| Error Code | Description                                             |
+|------------|---------------------------------------------------------|
+| 400        | Bad Request (invalid or missing params, CORS)           |
+| 401        | Invalid credentials (OAuth session expired, disabled/invalid API key) |
+| 402        | Out of credits                                          |
+| 403        | Your chosen model requires moderation and your input was flagged |
+| 408        | Your request timed out                                  |
+| 429        | You are being rate limited                              |
+| 502        | Your chosen model is down or we received an invalid response from it |
+
+---
+</Tabs.Tab>
+</Tabs>
+
+## Next Steps
+
+import React from 'react';
+import Card from '../components/customCard';
+import { faDatabase, faUser } from '@fortawesome/free-solid-svg-icons';
+
+export const CardGrid = () => {
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)', // Two columns with equal fraction of space
+      gridGap: '20px', // Space between the cards
+      alignItems: 'stretch', // This will stretch the card items to fill the container
+      margin: 'auto',
+      marginTop: 20
+    }}>
+      <Card
+        title="View Models"
+        icon={faDatabase}
+        description="View all the models we have available and start building!"
+        href="/supportedmodels" // Replace with your actual link
+      />
+
+      <Card
+        title="Integrate OAuth"
+        icon={faUser}
+        description="Authenticate with OpenRouter for access to all models."
+        href="/oauth" // Replace with your actual link
+      />
+    </div>
+  );
+};
+
+<CardGrid />

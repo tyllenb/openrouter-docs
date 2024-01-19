@@ -1,0 +1,136 @@
+# OpenAI Integration
+Use OpenRouter with the OpenAI Client.
+
+# Guide for OpenAI Integration
+
+This guide will help you set up OpenRouter in your application using the OpenAI client so you can take advantage of our standardized API and extensive model offerings.
+
+## Prerequisites
+
+- Sign up for an [OpenRouter account](https://openrouter.ai/).
+- Retrieve your `OPENROUTER_API_KEY`.
+- If available, have your `YOUR_SITE_URL` and `YOUR_SITE_NAME` for API rankings. ***(Optional)***
+
+## Quickstart language selection
+
+Choose the language or tool you want to get started with using the OpenRouter API
+
+import { Tabs } from 'nextra/components'
+
+<Tabs items={['Typescript', 'Python', 'curl']}>
+<Tabs.Tab>
+## Step 1: Install OpenAI Client API
+
+Ensure that you have the OpenAI Client API available in your environment. You can install it via npm:
+
+```bash copy
+npm install openai
+```
+
+## Step 2: Set Up Your Request
+
+You'll be using the OpenAI Client API to make requests to the OpenRouter API. Here's how you can set it up:
+
+```typescript filename="OpenAI Client Request" copy
+import OpenAI from "openai"
+
+const openai = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY,
+  defaultHeaders: {
+    "HTTP-Referer": process.env.YOUR_SITE_URL, // Optional, for including your app on openrouter.ai rankings.
+    "X-Title": process.env.YOUR_SITE_NAME, // Optional. Shows in rankings on openrouter.ai.
+  },
+  // dangerouslyAllowBrowser: true,
+})
+
+async function main() {
+  const completion = await openai.chat.completions.create({
+    model: "openai/gpt-3.5-turbo",
+    messages: [
+      { role: "user", content: "Say this is a test" }
+    ],
+  })
+
+  console.log(completion.choices[0].message)
+}
+
+main()
+```
+
+Replace `process.env.OPENROUTER_API_KEY`, `process.env.YOUR_SITE_URL`, and `process.env.YOUR_SITE_NAME` with your actual environment variables.
+
+## Step 3: Handle the Response
+
+The response from the OpenRouter API will be logged to the console. You can modify this to suit the needs of your application.
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+## Step 1: Install OpenAI Client API
+Ensure you have the OpenAI Client API installed in your Python environment. You can install it using pip:
+
+```bash copy
+pip install openai
+```
+
+## Step 2: Set Up Your Request
+
+You'll be using the OpenAI Client API in Python to make requests to the OpenRouter API. Here's a basic setup:
+
+```python filename="OpenAI Client Request" copy
+import openai
+
+openai.api_key = "your_openrouter_api_key_here"
+
+response = openai.ChatCompletion.create(
+  model="openai/gpt-3.5-turbo",
+  messages=[
+    {"role": "user", "content": "Say this is a test"}
+  ]
+)
+
+print(response.choices[0].message)
+```
+
+Replace `your_openrouter_api_key_here` with your actual `OPENROUTER_API_KEY`.
+
+## Step 3: Handle the Response
+
+The response from the OpenRouter API will be printed to the console. Adjust this to integrate with your application as needed.
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+## Step 1: Prepare Your Environment
+
+Before you begin, ensure you have cURL installed in your command-line environment.
+
+## Step 2: Set Up Your cURL Request
+
+You'll be making a POST request to the OpenRouter API using cURL. Here's the command you'll use:
+
+```bash copy 
+curl -X POST "https://openrouter.ai/api/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your_openrouter_api_key_here" \
+  -d '{
+    "model": "openai/gpt-3.5-turbo",
+    "messages": [
+      {"role": "user", "content": "Say this is a test"}
+    ]
+  }'
+```
+
+Replace `your_openrouter_api_key_here` with your actual `OPENROUTER_API_KEY`.
+
+## Step 3: Execute the Request
+
+Run the above command in your terminal.
+
+</Tabs.Tab>
+</Tabs>
+
+

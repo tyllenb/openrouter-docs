@@ -1,0 +1,117 @@
+
+# Rate Limits
+Checking Rate Limits and Credits
+
+## Rate Limits and Credits Remaining
+
+### Checking Rate Limits and Credits
+
+To check the rate limit or credits left on an API key, make a `GET` request to the following endpoint:
+
+import { Tabs } from 'nextra/components'
+
+<Tabs items={['Typescript', 'Python', 'curl']}>
+
+<Tabs.Tab>
+```typescript filename="Typescript" copy
+fetch("https://openrouter.ai/api/v1/auth/key", {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer $OPENROUTER_API_KEY'
+  },
+});
+```
+</Tabs.Tab>
+
+<Tabs.Tab>
+```python filename="Python" copy
+import requests
+
+OPENROUTER_API_KEY = 'your_api_key_here'  # Replace with your actual API key
+
+response = requests.get(
+    "https://openrouter.ai/api/v1/auth/key",
+    headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}"}
+)
+
+# To print the response
+print(response.json())
+```
+</Tabs.Tab>
+
+<Tabs.Tab>
+```curl filename="Curl" copy
+curl https://openrouter.ai/api/v1/auth/key \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY"
+```
+</Tabs.Tab>
+</Tabs>
+
+Be sure to replace `OPENROUTER_API_KEY` with your key. With a valid API key, the response will follow this structure:
+
+```typescript filename="Response" copy
+type Key = {
+  data: {
+    label: string,
+    usage: number, // Number of credits used
+    limit: number | null, // Credit limit for the key, null if unlimited
+    is_free_tier: boolean, // Indicates if the user has paid for credits
+    rate_limit: {
+      requests: number, // Number of requests allowed...
+      interval: string // ...in this interval, e.g., "10s"
+    }
+  }
+}
+```
+
+## Understanding Rate Limits
+
+Rate limits depend on the number of credits remaining on your key or account. Essentially, your rate limit equals your credits per second, subject to a current surge limit of 200. The formula is:
+
+```typescript filename="formula" copy
+requests_per_10_seconds = 10 * Math.min(1 + Math.floor(Math.max(credits, 0)), 200)
+```
+
+For example:
+
+**Example 1:** With 9.9 credits, you can make 100 requests every 10 seconds.
+
+**Example 2:** With -0.1 credits, you're limited to 10 requests every 10 seconds (possible 402 errors).
+
+#### Exceptions
+
+- **Surge Limit:** A rate limit of 200 requests per second applies to all users, serving as a safeguard against denial-of-service attacks. For higher limits, contact our support.
+- **Free Models:** Users of free models have a limit of 50 requests per second.
+
+## Token Limits
+
+### Understanding Token Limits
+
+Users with limited credits may not be able to make certain requests. To understand the maximum tokens you can generate and the maximum tokens allowed in a prompt, use this `GET` request:
+
+```typescript filename="Token Limits" copy
+fetch("https://openrouter.ai/api/v1/models", {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer $OPENROUTER_API_KEY'
+  },
+});
+```
+
+Each model's response includes a `per_request_limits` property:
+
+```typescript filename="Per Request Limit" copy
+
+type Model = {
+  id: string,
+  pricing: {
+    prompt: number,
+    completion: number
+  },
+  context_length: number,
+  per_request_limits: {
+    prompt_tokens: number,
+    completion_tokens: number
+  }
+}
+```
