@@ -71,6 +71,9 @@ const config: DocsThemeConfig = {
         system: null,
       }
     }
+  },
+  nextThemes:{
+    defaultTheme: 'light',
   }
 }
 
