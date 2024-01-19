@@ -64,7 +64,13 @@ const config: DocsThemeConfig = {
     text:'',
   },
   themeSwitch: {
-    component: null
+    useOptions() {
+      return {
+        light: 'Light',
+        dark: null,
+        system: null,
+      }
+    }
   }
 }
 
